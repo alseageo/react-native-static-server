@@ -34,6 +34,7 @@ RCT_EXPORT_METHOD(start: (NSString *)port
                   root:(NSString *)optroot
                   localOnly:(BOOL *)localhost_only
                   keepAlive:(BOOL *)keep_alive
+                  cacheAge:(NSUInteger)cache_age
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
 
@@ -77,7 +78,6 @@ RCT_EXPORT_METHOD(start: (NSString *)port
     NSString *basePath = @"/";
     NSString *directoryPath = self.www_root;
     NSString *indexFilename = @"index.html";
-    NSUInteger cacheAge = 3600;
     BOOL allowRangeRequests = YES;
     [_webServer addHandlerWithMatchBlock:^GCDWebServerRequest*(NSString* requestMethod, NSURL* requestURL, NSDictionary<NSString*, NSString*>* requestHeaders, NSString* urlPath, NSDictionary<NSString*, NSString*>* urlQuery) {
         if (![requestMethod isEqualToString:@"GET"]) {
@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(start: (NSString *)port
           }
         }
         if (response) {
-          response.cacheControlMaxAge = cacheAge;
+          response.cacheControlMaxAge = cache_age;
           [response setValue:@"GET" forAdditionalHeader:@"Access-Control-Request-Method"];
           [response setValue:@"OriginX-Requested-With, Content-Type, Accept, Cache-Control, Range,Access-Control-Allow-Origin"  forAdditionalHeader:@"Access-Control-Request-Headers"];
           [response setValue: @"*" forAdditionalHeader:@"Access-Control-Allow-Origin"];

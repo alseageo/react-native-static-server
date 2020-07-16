@@ -8,6 +8,7 @@ const { FPStaticServer } = NativeModules;
 
 const PORT = '';
 const ROOT = null;
+const CACHE_AGE = 3600;
 const LOCALHOST = 'http://127.0.0.1:';
 
 class StaticServer {
@@ -18,6 +19,7 @@ class StaticServer {
 				this.root = root || ROOT;
 				this.localOnly = (opts && opts.localOnly) || false;
 				this.keepAlive = (opts && opts.keepAlive) || false;
+				this.cacheAge = (opts && opts.hasOwnProperty('cacheAge')) ? opts.cacheAge : CACHE_AGE;
 				break;
 			case 2:
 				this.port = `${port}`;
@@ -25,6 +27,7 @@ class StaticServer {
 					this.root = root;
 					this.localOnly = false;
 					this.keepAlive = false;
+					this.cacheAge = CACHE_AGE;
 				} else {
 					this.root = ROOT;
 					this.localOnly = (arguments[1] && arguments[1].localOnly) || false;
@@ -37,11 +40,13 @@ class StaticServer {
 					this.root = ROOT;
 					this.localOnly = false;
 					this.keepAlive = false;
+					this.cacheAge = CACHE_AGE;
 				} else {
 					this.port = PORT;
 					this.root = ROOT;
 					this.localOnly = (arguments[0] && arguments[0].localOnly) || false;
 					this.keepAlive = (arguments[0] && arguments[0].keepAlive) || false;
+					this.cacheAge = (arguments[0] && arguments[0].hasOwnProperty('cacheAge')) ? arguments[0].cacheAge : CACHE_AGE;
 				}
 				break;
 			default:
@@ -49,6 +54,7 @@ class StaticServer {
 				this.root = ROOT;
 				this.localOnly = false;
 				this.keepAlive = false;
+				this.cacheAge = CACHE_AGE;
 		}
 
 
@@ -69,7 +75,7 @@ class StaticServer {
 			AppState.addEventListener('change', this._handleAppStateChangeFn);
 		}
 
-		return FPStaticServer.start(this.port, this.root, this.localOnly, this.keepAlive)
+		return FPStaticServer.start(this.port, this.root, this.localOnly, this.keepAlive, this.cacheAge)
 			.then((origin) => {
 				this._origin = origin;
 				return origin;
